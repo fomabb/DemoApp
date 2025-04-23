@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="2025-04-23-create-table-users-01" author="Nikolay Kirilyuk">
+        <tagDatabase tag="v.1.0.0"/>
+    </changeSet>
+
+    <include file="01-create-table-users.sql" relativeToChangelogFile="true"/>
+
+    <changeSet id="2025-04-23-create-table-accounts-02" author="Nikolay Kirilyuk">
+        <tagDatabase tag="v.1.0.0"/>
+    </changeSet>
+
+    <include file="02-create-table-accounts.sql" relativeToChangelogFile="true"/>
+
+    <changeSet id="2025-04-23-create-table-email_data-03" author="Nikolay Kirilyuk">
+        <tagDatabase tag="v.1.0.0"/>
+    </changeSet>
+
+    <include file="03-create-table-email_data.sql" relativeToChangelogFile="true"/>
+
+    <changeSet id="2025-04-23-create-table-phone_data-04" author="Nikolay Kirilyuk">
+        <tagDatabase tag="v.1.0.0"/>
+    </changeSet>
+
+    <include file="04-create-table-phone_data.sql" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

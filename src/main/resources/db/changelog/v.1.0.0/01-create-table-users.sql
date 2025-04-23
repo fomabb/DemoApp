@@ -1,0 +1,8 @@
+CREATE TABLE users
+(
+    ID            BIGSERIAL PRIMARY KEY,
+    NAME          VARCHAR(500) NOT NULL,
+    DATE_OF_BIRTH DATE         NOT NULL,
+    PASSWORD      VARCHAR(500) NOT NULL,
+    UNIQUE (ID)
+);
