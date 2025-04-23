@@ -1,6 +1,8 @@
 name: CI/CD Pipeline Backend
 
 on:
+  push:
+    branches: ["dev", "master"]
   pull_request:
     branches: ["dev", "master"]
 
@@ -28,7 +30,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Grant execute permission to mvnw
-        run: chmod +x backend/mvnw
+        run: chmod +x mvnw
 
       - name: Back-end Automatic Tests
         run: ./mvnw test
