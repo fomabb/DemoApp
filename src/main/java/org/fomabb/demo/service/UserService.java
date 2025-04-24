@@ -9,4 +9,6 @@ public interface UserService {
     User findUserById(Long id);
 
     void addEmailToUser(Long userId, String email);
+
+    void addPhoneToUser(Long userId, String phone);
 }

@@ -32,8 +32,8 @@ public class UserController {
     }
 
     @PostMapping("/add-phone")
-    public ResponseEntity<Void> addFileToUserById(@RequestBody @Valid UserAddPhoneRequest request) {
-        userService.addEmailToUser(request.getUserId(), request.getPhone());
+    public ResponseEntity<Void> addPhoneToUserById(@RequestBody @Valid UserAddPhoneRequest request) {
+        userService.addPhoneToUser(request.getUserId(), request.getPhone());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }
