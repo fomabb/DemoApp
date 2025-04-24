@@ -1,5 +1,6 @@
 package org.fomabb.demo.service;
 
+import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.entity.User;
 
 public interface UserService {
@@ -11,4 +12,6 @@ public interface UserService {
     void addEmailToUser(Long userId, String email);
 
     void addPhoneToUser(Long userId, String phone);
+
+    EmailDataDtoResponse getAllEmailsByUserId(Long id);
 }
