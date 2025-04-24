@@ -3,10 +3,12 @@ package org.fomabb.demo.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.entity.EmailData;
 import org.fomabb.demo.entity.PhoneData;
 import org.fomabb.demo.entity.User;
 import org.fomabb.demo.repository.UserRepository;
+import org.fomabb.demo.security.enumeration.Role;
 import org.fomabb.demo.security.service.UserServiceSecurity;
 import org.fomabb.demo.service.EmailDataService;
 import org.fomabb.demo.service.PhoneDataService;
@@ -69,6 +71,18 @@ public class UserServiceImpl implements UserService {
                     .phone(phone)
                     .build());
             log.info("Телефон {} добавлен пользователю {}", phone, existingUser.getName());
+        } else {
+            throw new AccessDeniedException("User does not have permission to update this task");
+        }
+    }
+
+    @Override
+    public EmailDataDtoResponse getAllEmailsByUserId(Long id) {
+        Long userValid = userServiceSecurity.getCurrentUser().getId();
+        boolean isAdmin = userServiceSecurity.getCurrentUser().getRole().equals(Role.ROLE_ADMIN);
+        User existingUser = findUserById(id);
+        if (Objects.equals(existingUser.getId(), userValid) || isAdmin) {
+            return emailDataService.getEmailsByUserId(existingUser.getId());
         } else {
             throw new AccessDeniedException("User does not have permission to update this task");
         }
