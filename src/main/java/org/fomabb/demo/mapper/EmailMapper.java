@@ -5,7 +5,7 @@ import org.fomabb.demo.entity.EmailData;
 
 import java.util.List;
 
-public interface Mapper {
+public interface EmailMapper {
 
     EmailDataDtoResponse emailEntityToEmailResponse(List<EmailData> emailData);
 }

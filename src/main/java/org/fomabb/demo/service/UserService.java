@@ -1,7 +1,12 @@
 package org.fomabb.demo.service;
 
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
+import org.fomabb.demo.dto.response.PageableResponse;
+import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.entity.User;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface UserService {
 
@@ -14,4 +19,8 @@ public interface UserService {
     void addPhoneToUser(Long userId, String phone);
 
     EmailDataDtoResponse getAllEmailsByUserId(Long id);
+
+    PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable);
+
+    List<UserdataDtoResponse> getAllUser();
 }
