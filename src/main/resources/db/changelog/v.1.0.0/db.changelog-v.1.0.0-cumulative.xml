@@ -29,4 +29,10 @@
 
     <include file="04-create-table-phone_data.sql" relativeToChangelogFile="true"/>
 
+    <changeSet id="2025-04-24-add-column-role-users-05" author="Nikolay Kirilyuk">
+        <tagDatabase tag="v.1.0.0"/>
+    </changeSet>
+
+    <include file="05-add-column-role-users.sql" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
