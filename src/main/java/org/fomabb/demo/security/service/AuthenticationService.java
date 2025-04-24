@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.fomabb.demo.entity.EmailData;
+import org.fomabb.demo.entity.PhoneData;
 import org.fomabb.demo.entity.User;
 import org.fomabb.demo.exceptionhandler.exception.BusinessException;
 import org.fomabb.demo.security.dto.request.SignInRequest;
@@ -11,6 +12,7 @@ import org.fomabb.demo.security.dto.request.SignUpRequest;
 import org.fomabb.demo.security.dto.response.JwtAuthenticationResponse;
 import org.fomabb.demo.security.enumeration.Role;
 import org.fomabb.demo.service.EmailDataService;
+import org.fomabb.demo.service.PhoneDataService;
 import org.fomabb.demo.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @Slf4j
@@ -32,6 +35,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
     private final EmailDataService emailDataService;
+    private final PhoneDataService phoneDataService;
 
     /**
      * Регистрация пользователя
@@ -49,23 +53,19 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .emailData(new HashSet<>())
+                .phoneData(Set.of(PhoneData.builder().phone(request.getPhone()).build()))
                 .build();
-
-        // Сохраняем пользователя в базе данных
         userServiceSecurity.create(user);
         log.info("Пользователь сохранен в базу данных");
-
-        // Создаем и добавляем email в emailData
-        EmailData emailData = new EmailData();
-        emailData.setEmail(request.getEmail());
-        emailData.setUser(user);
-        user.getEmailData().add(emailData);
-
-        // Сохраняем emailData
-        emailDataService.emailDataSave(emailData);
+        phoneDataService.phoneDataSave(PhoneData.builder()
+                .user(user)
+                .phone(request.getPhone())
+                .build());
+        emailDataService.emailDataSave(EmailData.builder()
+                .user(user)
+                .email(request.getEmail())
+                .build());
         log.info("Email адрес добавлен в базу данных");
-
-        // Генерация токена
         log.info("Начало генерации токена для пользователя");
         var jwt = jwtService.generateToken(user);
         if (jwt.isEmpty()) {

@@ -5,9 +5,7 @@ import org.fomabb.demo.entity.User;
 import org.fomabb.demo.exceptionhandler.exception.BusinessException;
 import org.fomabb.demo.repository.UserRepository;
 import org.fomabb.demo.security.enumeration.Role;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -51,27 +49,6 @@ public class UserServiceSecurity {
     public User getByUsername(String username) {
         return repository.findByPrimaryEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User with not found"));
-    }
-
-    /**
-     * Извлечение ID пользователя из security context
-     *
-     * @return userId
-     */
-    public Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-            return ((User) userDetails).getId();
-        }
-        throw new BusinessException("Authentication principal is not of type UserDetails");
-    }
-
-    public Role getCurrentUserRole() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication.getPrincipal() instanceof UserDetails userDetails) {
-            return ((User) userDetails).getRole();
-        }
-        throw new BusinessException("Authentication principal is not of type UserDetails");
     }
 
     /**
