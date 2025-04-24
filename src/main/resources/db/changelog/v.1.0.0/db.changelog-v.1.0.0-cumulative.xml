@@ -61,4 +61,10 @@
 
     <include file="static-data/04-insert-into-accounts.sql" relativeToChangelogFile="true"/>
 
+    <changeSet id="2025-04-24-insert-into-admin-05" author="Nikolay Kirilyuk">
+        <tagDatabase tag="1.0.0"/>
+    </changeSet>
+
+    <include file="static-data/05-insert-int-admin.sql" relativeToChangelogFile="true"/>
+
 </databaseChangeLog>
