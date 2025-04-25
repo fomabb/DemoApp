@@ -3,7 +3,6 @@ package org.fomabb.demo.exceptionhandler;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletException;
-import lombok.AllArgsConstructor;
 import org.fomabb.demo.dto.exception.CommonExceptionResponse;
 import org.fomabb.demo.exceptionhandler.exception.BusinessException;
 import org.fomabb.demo.exceptionhandler.exception.ValidationException;
@@ -18,7 +17,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
-@AllArgsConstructor
 public class GlobalExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -27,14 +25,8 @@ public class GlobalExceptionHandlerAdvice extends ResponseEntityExceptionHandler
                 .body(buildResponseBody(e.getMessage(), e.getClass().getSimpleName()));
     }
 
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<CommonExceptionResponse> handleValidationException(ValidationException e) {
-        return ResponseEntity.unprocessableEntity()
-                .body(buildResponseBody(e.getMessage(), e.getClass().getSimpleName()));
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<CommonExceptionResponse> handleBusinessException(BusinessException e) {
+    @ExceptionHandler({ValidationException.class, BusinessException.class})
+    public ResponseEntity<CommonExceptionResponse> handleValidationException(RuntimeException e) {
         return ResponseEntity.unprocessableEntity()
                 .body(buildResponseBody(e.getMessage(), e.getClass().getSimpleName()));
     }
@@ -50,8 +42,8 @@ public class GlobalExceptionHandlerAdvice extends ResponseEntityExceptionHandler
                 .body(buildResponseBody(e.getMessage(), e.getLocalizedMessage()));
     }
 
-    @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<CommonExceptionResponse> handleExpiredJwtException(ExpiredJwtException e) {
+    @ExceptionHandler({ExpiredJwtException.class, AuthenticationException.class})
+    public ResponseEntity<CommonExceptionResponse> handleAuthenticationException(Exception e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(buildResponseBody(e.getMessage(), e.getClass().getSimpleName()));
     }
@@ -59,12 +51,6 @@ public class GlobalExceptionHandlerAdvice extends ResponseEntityExceptionHandler
     @ExceptionHandler(Exception.class)
     public ResponseEntity<CommonExceptionResponse> handleGeneralException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(buildResponseBody(e.getMessage(), e.getClass().getSimpleName()));
-    }
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<CommonExceptionResponse> handleAuthenticationException(AuthenticationException e) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(buildResponseBody(e.getMessage(), e.getClass().getSimpleName()));
     }
 

@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageableResponse<UserDataDto> getAllUsers(Pageable pageable) {
         Page<User> userPage = userRepository.findAll(pageable);
-        List<UserDataDto> userDataDtos = userMapper.listEntityToAllUserDto(userPage.getContent());
+        List<UserDataDto> userDataDtos = userMapper.listEntityToUserListDto(userPage.getContent());
         return pageableResponseUtil.buildPageableResponse(userDataDtos, userPage, new PageableResponse<>());
     }
 
