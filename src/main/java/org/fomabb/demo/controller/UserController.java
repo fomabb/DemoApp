@@ -56,7 +56,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllEmailsByUserId(id));
     }
 
+
+
     @GetMapping("/search")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
     public ResponseEntity<PageableResponse<UserdataDtoResponse>> search(
             @RequestParam("q") String query,
             @RequestParam(value = "page", defaultValue = "1") int page,
