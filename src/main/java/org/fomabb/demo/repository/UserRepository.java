@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.Optional;
 
 @Repository
@@ -20,12 +21,23 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmailDataEmail(String email);
 
     @Query("""
-            select u from User u where u.name=:q
+            SELECT u FROM User u
+            WHERE
+                u.dateOfBirth > :dateOfBirth
+                AND (
+                    lower(u.name) LIKE lower(concat(:q, '%'))
+                    OR EXISTS (SELECT 1 FROM u.emailData e WHERE e.email = :q)
+                    OR EXISTS (SELECT 1 FROM u.phoneData p WHERE p.phone = :q)
+                )
             """)
-    Page<User> searchByQuery(@Param("q") String query, Pageable pageable);
-}
+    Page<User> searchByQueryWithDate(@Param("q") String query, @Param("dateOfBirth") Date dateOfBirth, Pageable pageable);
 
-//select u from User u where (:query IS NULL OR u.dateOfBirth > :query)
-//and (:query is null or u.name LIKE CONCAT(:name, '%'))
-//and (:query is null or u.emailData=:query)
-//and (:query is null or u.phoneData=:query)
+    @Query("""
+            SELECT u FROM User u
+            WHERE
+                lower(u.name) LIKE lower(concat(:q, '%'))
+                OR EXISTS (SELECT 1 FROM u.emailData e WHERE e.email = :q)
+                OR EXISTS (SELECT 1 FROM u.phoneData p WHERE p.phone = :q)
+            """)
+    Page<User> searchByQueryWithoutDate(@Param("q") String query, Pageable pageable);
+}

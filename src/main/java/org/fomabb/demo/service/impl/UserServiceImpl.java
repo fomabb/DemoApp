@@ -23,6 +23,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -99,14 +101,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable) {
-        Page<User> userPage = userRepository.searchByQuery(query, pageable);
-        List<UserdataDtoResponse> userdataDtoResponses = userMapper.listEntityUserToListUserDto(userPage.getContent());
-        return pageableResponseUtil.buildPageableResponse(userdataDtoResponses, userPage, new PageableResponse<>());
-    }
+    public PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable, Date dateOfBirth) {
+        if (query == null || query.trim().isEmpty()) {
+            return pageableResponseUtil.buildPageableResponse(
+                    Collections.emptyList(), Page.empty(), new PageableResponse<>());
+        }
 
-    @Override
-    public List<UserdataDtoResponse> getAllUser() {
-        return userMapper.listEntityUserToListUserDto(userRepository.findAll());
+        String trimmedQuery = query.trim();
+        Page<User> userPage;
+
+        if (dateOfBirth != null) {
+            userPage = userRepository.searchByQueryWithDate(trimmedQuery, dateOfBirth, pageable);
+        } else {
+            userPage = userRepository.searchByQueryWithoutDate(trimmedQuery, pageable);
+        }
+
+        List<UserdataDtoResponse> dtoList = userMapper.listEntityUserToListUserDto(userPage.getContent());
+
+        return pageableResponseUtil.buildPageableResponse(dtoList, userPage, new PageableResponse<>());
     }
 }

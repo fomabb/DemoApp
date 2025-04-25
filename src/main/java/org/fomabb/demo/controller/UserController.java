@@ -11,6 +11,7 @@ import org.fomabb.demo.dto.response.PageableResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.service.UserService;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -59,13 +60,9 @@ public class UserController {
     public ResponseEntity<PageableResponse<UserdataDtoResponse>> search(
             @RequestParam("q") String query,
             @RequestParam(value = "page", defaultValue = "1") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(name = "dateOfBirth", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date dateOfBirth
     ) {
-        return ResponseEntity.ok(userService.search(query, PageRequest.of(page - 1, size)));
-    }
-
-    @GetMapping("/find-all")
-    public ResponseEntity<List<UserdataDtoResponse>> getAllUser() {
-        return ResponseEntity.ok(userService.getAllUser());
+        return ResponseEntity.ok(userService.search(query, PageRequest.of(page - 1, size), dateOfBirth));
     }
 }
