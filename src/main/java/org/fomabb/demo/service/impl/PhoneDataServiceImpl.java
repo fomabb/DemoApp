@@ -2,7 +2,9 @@ package org.fomabb.demo.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.fomabb.demo.dto.response.PhoneDataDtoResponse;
 import org.fomabb.demo.entity.PhoneData;
+import org.fomabb.demo.mapper.PhoneMapper;
 import org.fomabb.demo.repository.PhoneDataRepository;
 import org.fomabb.demo.service.PhoneDataService;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import static org.fomabb.demo.util.Constant.PHONE_WITH_ID_NOT_FOUND;
 public class PhoneDataServiceImpl implements PhoneDataService {
 
     private final PhoneDataRepository phoneDataRepository;
+    private final PhoneMapper phoneMapper;
 
     @Override
     @Transactional
@@ -41,5 +44,10 @@ public class PhoneDataServiceImpl implements PhoneDataService {
     @Override
     public List<PhoneData> getPhonesByUserId(Long userId) {
         return phoneDataRepository.findByUserId(userId);
+    }
+
+    @Override
+    public PhoneDataDtoResponse getResponsePhonesByUserId(Long userId) {
+        return phoneMapper.phonesEntityToPhoneResponse(phoneDataRepository.findByUserId(userId));
     }
 }

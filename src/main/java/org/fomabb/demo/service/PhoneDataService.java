@@ -1,5 +1,6 @@
 package org.fomabb.demo.service;
 
+import org.fomabb.demo.dto.response.PhoneDataDtoResponse;
 import org.fomabb.demo.entity.PhoneData;
 
 import java.util.List;
@@ -13,4 +14,6 @@ public interface PhoneDataService {
     void deletePhoneById(Long id);
 
     List<PhoneData> getPhonesByUserId(Long userId);
+
+    PhoneDataDtoResponse getResponsePhonesByUserId(Long userId);
 }
