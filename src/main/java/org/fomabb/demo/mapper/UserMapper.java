@@ -12,5 +12,5 @@ public interface UserMapper {
 
     List<UserdataDtoResponse> listEntityUserToListUserDto(List<User> users);
 
-    List<UserDataDto> listEntityToAllUserDto(List<User> content);
+    List<UserDataDto> listEntityToUserListDto(List<User> content);
 }

@@ -6,13 +6,16 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
@@ -43,6 +46,11 @@ public class SignUpRequest {
     @NotBlank(message = "Адрес электронной почты не может быть пустым")
     @Pattern(regexp = "^79[0-9]{9}$")
     private String phone;
+
+    @Schema(description = "Начальный баланс", example = "12.21")
+    @Positive
+    @NotNull
+    private BigDecimal balance;
 
     @Schema(description = "Пароль", example = "user")
     @Size(max = 255, message = "Длина пароля должна быть не более 255 символов")

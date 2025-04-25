@@ -3,6 +3,7 @@ package org.fomabb.demo.security.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.fomabb.demo.entity.Account;
 import org.fomabb.demo.entity.EmailData;
 import org.fomabb.demo.entity.PhoneData;
 import org.fomabb.demo.entity.User;
@@ -11,6 +12,7 @@ import org.fomabb.demo.security.dto.request.SignInRequest;
 import org.fomabb.demo.security.dto.request.SignUpRequest;
 import org.fomabb.demo.security.dto.response.JwtAuthenticationResponse;
 import org.fomabb.demo.security.enumeration.Role;
+import org.fomabb.demo.service.AccountService;
 import org.fomabb.demo.service.EmailDataService;
 import org.fomabb.demo.service.PhoneDataService;
 import org.fomabb.demo.service.UserService;
@@ -36,6 +38,7 @@ public class AuthenticationService {
     private final UserService userService;
     private final EmailDataService emailDataService;
     private final PhoneDataService phoneDataService;
+    private final AccountService accountService;
 
     /**
      * Регистрация пользователя
@@ -57,6 +60,11 @@ public class AuthenticationService {
                 .build();
         userServiceSecurity.create(user);
         log.info("Пользователь сохранен в базу данных");
+        accountService.createAccountWithBalance(Account.builder()
+                .user(user)
+                .balance(request.getBalance())
+                .actualBalance(request.getBalance())
+                .build());
         phoneDataService.phoneDataSave(PhoneData.builder()
                 .user(user)
                 .phone(request.getPhone())

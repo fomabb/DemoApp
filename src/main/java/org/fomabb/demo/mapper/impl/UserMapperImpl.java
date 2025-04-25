@@ -44,7 +44,7 @@ public class UserMapperImpl implements UserMapper {
     }
 
     @Override
-    public List<UserDataDto> listEntityToAllUserDto(List<User> content) {
+    public List<UserDataDto> listEntityToUserListDto(List<User> content) {
         if (content == null) {
             return Collections.emptyList();
         }

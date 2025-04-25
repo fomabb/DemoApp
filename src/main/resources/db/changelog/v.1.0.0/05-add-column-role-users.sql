@@ -1,2 +1,2 @@
-ALTER TABLE users
-    ADD COLUMN role VARCHAR(20) NOT NULL default 'ROLE_USER';
+alter table users
+    add column role varchar(20) not null default 'ROLE_USER';

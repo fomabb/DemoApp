@@ -1,9 +1,9 @@
-CREATE TABLE users
+create table users
 (
-    ID            BIGSERIAL PRIMARY KEY,
-    NAME          VARCHAR(500) NOT NULL,
-    PRIMARY_EMAIL VARCHAR(255) NOT NULL UNIQUE,
-    DATE_OF_BIRTH DATE         NOT NULL,
-    PASSWORD      VARCHAR(500) NOT NULL,
-    UNIQUE (ID)
+    id            bigserial primary key,
+    name          varchar(500) not null,
+    primary_email varchar(255) not null unique,
+    date_of_birth date         not null,
+    password      varchar(500) not null,
+    unique (id)
 );

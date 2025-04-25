@@ -1,7 +1,7 @@
-CREATE TABLE phone_data
+create table phone_data
 (
-    ID      BIGSERIAL PRIMARY KEY,
-    USER_ID BIGINT      NOT NULL,
-    PHONE   VARCHAR(13) NOT NULL UNIQUE,
-    FOREIGN KEY (USER_ID) REFERENCES users (ID) ON DELETE CASCADE
+    id      bigserial primary key,
+    user_id bigint      not null,
+    phone   varchar(13) not null unique,
+    foreign key (user_id) references users (id) on delete cascade
 );
