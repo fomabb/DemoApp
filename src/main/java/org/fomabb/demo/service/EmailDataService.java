@@ -8,4 +8,6 @@ public interface EmailDataService {
     void emailDataSave(EmailData emailData);
 
     EmailDataDtoResponse getEmailsByUserId(Long userId);
+
+    EmailData getEmailDataById(Long id);
 }

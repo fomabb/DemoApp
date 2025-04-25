@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.fomabb.demo.dto.UserDataDto;
 import org.fomabb.demo.dto.exception.CommonExceptionResponse;
+import org.fomabb.demo.dto.request.UpdateEmailRequest;
+import org.fomabb.demo.dto.request.UpdatePhoneRequest;
 import org.fomabb.demo.dto.request.UserAddEmailRequest;
 import org.fomabb.demo.dto.request.UserAddPhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
@@ -24,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -121,6 +124,18 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PatchMapping("/update-email")
+    public ResponseEntity<Void> updateEmail(@RequestBody @Valid UpdateEmailRequest request) {
+        userService.updateEmail(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
+    @PatchMapping("/update-phone")
+    public ResponseEntity<Void> updatePhone(@RequestBody @Valid UpdatePhoneRequest request) {
+        userService.updatePhone(request);
+        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+    }
+
     @Operation(
             summary = "Получить все email пользователя.",
             description = """
@@ -185,7 +200,7 @@ public class UserController {
             @RequestParam("q") String query,
             @RequestParam(value = "page", defaultValue = "1") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(name = "dateOfBirth", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date dateOfBirth
+            @RequestParam(name = "dateOfBirth", required = false) @Valid @DateTimeFormat(pattern = "dd.MM.yyyy") Date dateOfBirth
     ) {
         return ResponseEntity.ok(userService.search(query, PageRequest.of(page - 1, size), dateOfBirth));
     }
