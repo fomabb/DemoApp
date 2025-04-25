@@ -5,6 +5,7 @@ import org.fomabb.demo.dto.request.UpdateEmailRequest;
 import org.fomabb.demo.dto.request.UpdatePhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.dto.response.PageableResponse;
+import org.fomabb.demo.dto.response.PhoneDataDtoResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.entity.User;
 import org.springframework.data.domain.Pageable;
@@ -36,4 +37,6 @@ public interface UserService {
     void removePhoneByUserIdPhoneId(Long userId, Long phoneId);
 
     void removePhoneByUserIdEmailId(Long userId, Long emailId);
+
+    PhoneDataDtoResponse getAllPhonesByUserId(Long id);
 }

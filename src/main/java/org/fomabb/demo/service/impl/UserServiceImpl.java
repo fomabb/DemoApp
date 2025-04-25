@@ -8,6 +8,7 @@ import org.fomabb.demo.dto.request.UpdateEmailRequest;
 import org.fomabb.demo.dto.request.UpdatePhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.dto.response.PageableResponse;
+import org.fomabb.demo.dto.response.PhoneDataDtoResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.entity.EmailData;
 import org.fomabb.demo.entity.PhoneData;
@@ -107,6 +108,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public PhoneDataDtoResponse getAllPhonesByUserId(Long id) {
+        Long userValid = userServiceSecurity.getCurrentUser().getId();
+        boolean isAdmin = userServiceSecurity.getCurrentUser().getRole().equals(Role.ROLE_ADMIN);
+        User existingUser = findUserById(id);
+        if (Objects.equals(existingUser.getId(), userValid) || isAdmin) {
+            return phoneDataService.getResponsePhonesByUserId(existingUser.getId());
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    @Override
     public PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable, Date dateOfBirth) {
         if (query == null || query.trim().isEmpty()) {
             return pageableResponseUtil.buildPageableResponse(
@@ -153,6 +166,11 @@ public class UserServiceImpl implements UserService {
                 && Objects.equals(existingUser.getId(), emailData.getId())
         ) {
             emailData.setEmail(dto.getEmail());
+
+            if (dto.getEmail().equals(existingUser.getPrimaryEmail())) {
+                existingUser.setPrimaryEmail(dto.getEmail());
+            }
+
             emailDataService.emailDataSave(emailData);
         } else {
             throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
@@ -209,6 +227,7 @@ public class UserServiceImpl implements UserService {
             List<EmailData> userEmail = emailDataService.getListEmailsByUserId(existingUser.getId());
             if (userEmail.size() > 1) {
                 emailDataService.deleteEmailById(emailData.getId());
+                existingUser.setPrimaryEmail(emailData.getEmail());
             } else {
                 throw new BusinessException("The user must have at least one email");
             }

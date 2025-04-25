@@ -17,6 +17,7 @@ import org.fomabb.demo.dto.request.UserAddEmailRequest;
 import org.fomabb.demo.dto.request.UserAddPhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.dto.response.PageableResponse;
+import org.fomabb.demo.dto.response.PhoneDataDtoResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.service.UserService;
 import org.springframework.data.domain.PageRequest;
@@ -170,6 +171,34 @@ public class UserController {
     ) {
         userService.removePhoneByUserIdEmailId(userId, emailId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(
+            summary = "Получить все номера телефона пользователя.",
+            description = """
+                    `
+                    Возвращает все номера телефонов, связанные с указанным пользователем по его идентификатору.
+                    `
+                    """,
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "`Список телефонных номеров успешно возвращен`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = EmailDataDtoResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "`Пользователь не найден`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "500", description = "`Ошибка сервера`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class))
+                    )
+            }
+    )
+    @GetMapping("/show-phones/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
+    public ResponseEntity<PhoneDataDtoResponse> getAllPhonesByUserId(@PathVariable("userId") Long id) {
+        return ResponseEntity.ok(userService.getAllPhonesByUserId(id));
     }
 
     @Operation(
