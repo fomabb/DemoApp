@@ -10,6 +10,8 @@ import org.fomabb.demo.service.EmailDataService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.fomabb.demo.util.Constant.EMAIL_DATA_WITH_ID_NOT_FOUND;
 
 @Service
@@ -37,5 +39,16 @@ public class EmailDataServiceImpl implements EmailDataService {
                 .orElseThrow(
                         () -> new EntityNotFoundException(EMAIL_DATA_WITH_ID_NOT_FOUND.formatted(id))
                 );
+    }
+
+    @Override
+    @Transactional
+    public void deleteEmailById(Long id) {
+        emailDataRepository.deleteById(id);
+    }
+
+    @Override
+    public List<EmailData> getListEmailsByUserId(Long id) {
+        return emailDataRepository.findEmailDataByUserId(id);
     }
 }

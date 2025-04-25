@@ -12,6 +12,7 @@ import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.entity.EmailData;
 import org.fomabb.demo.entity.PhoneData;
 import org.fomabb.demo.entity.User;
+import org.fomabb.demo.exceptionhandler.exception.BusinessException;
 import org.fomabb.demo.mapper.UserMapper;
 import org.fomabb.demo.repository.UserRepository;
 import org.fomabb.demo.security.enumeration.Role;
@@ -143,9 +144,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateEmail(UpdateEmailRequest dto) {
-        User existingUser = userRepository.findById(dto.getUserId()).orElseThrow(
-                () -> new EntityNotFoundException(String.format(USER_WITH_ID_NOT_FOUND, dto.getUserId()))
-        );
+        User existingUser = findUserById(dto.getUserId());
         EmailData emailData = emailDataService.getEmailDataById(dto.getEmailId());
 
         Long validateUserId = userServiceSecurity.getCurrentUser().getId();
@@ -163,9 +162,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updatePhone(UpdatePhoneRequest dto) {
-        User existingUser = userRepository.findById(dto.getUserId()).orElseThrow(
-                () -> new EntityNotFoundException(String.format(USER_WITH_ID_NOT_FOUND, dto.getUserId()))
-        );
+        User existingUser = findUserById(dto.getUserId());
         PhoneData phoneData = phoneDataService.getPhoneDataById(dto.getPhoneId());
 
         Long validateUserId = userServiceSecurity.getCurrentUser().getId();
@@ -175,6 +172,46 @@ public class UserServiceImpl implements UserService {
         ) {
             phoneData.setPhone(dto.getPhone());
             phoneDataService.phoneDataSave(phoneData);
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removePhoneByUserIdPhoneId(Long userId, Long phoneId) {
+        User existingUser = findUserById(userId);
+        PhoneData phoneData = phoneDataService.getPhoneDataById(phoneId);
+        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
+
+        if (Objects.equals(existingUser.getId(), validateUserId)
+                && Objects.equals(existingUser.getId(), phoneData.getUser().getId())) {
+            List<PhoneData> userPhones = phoneDataService.getPhonesByUserId(existingUser.getId());
+            if (userPhones.size() > 1) {
+                phoneDataService.deletePhoneById(phoneData.getId());
+            } else {
+                throw new BusinessException("The user must have at least one phone");
+            }
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removePhoneByUserIdEmailId(Long userId, Long emailId) {
+        User existingUser = findUserById(userId);
+        EmailData emailData = emailDataService.getEmailDataById(emailId);
+        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
+
+        if (Objects.equals(existingUser.getId(), validateUserId)
+                && Objects.equals(existingUser.getId(), emailData.getUser().getId())) {
+            List<EmailData> userEmail = emailDataService.getListEmailsByUserId(existingUser.getId());
+            if (userEmail.size() > 1) {
+                emailDataService.deleteEmailById(emailData.getId());
+            } else {
+                throw new BusinessException("The user must have at least one email");
+            }
         } else {
             throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }

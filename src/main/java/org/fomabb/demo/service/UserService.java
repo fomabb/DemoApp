@@ -32,4 +32,8 @@ public interface UserService {
     void updateEmail(UpdateEmailRequest dto);
 
     void updatePhone(UpdatePhoneRequest dto);
+
+    void removePhoneByUserIdPhoneId(Long userId, Long phoneId);
+
+    void removePhoneByUserIdEmailId(Long userId, Long emailId);
 }
