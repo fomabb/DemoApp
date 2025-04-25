@@ -32,7 +32,7 @@ public class SignUpRequest {
     @Temporal(TemporalType.DATE)
     private Date dateOfBirth;
 
-    @Schema(description = "Адрес электронной почты", example = "ivan123@gmail.com")
+    @Schema(description = "Адрес электронной почты", example = "alice@example.com")
     @Size(min = 5, max = 100, message = "Адрес электронной почты должен содержать от 5 до 100 символов")
     @NotBlank(message = "Адрес электронной почты не может быть пустым")
     @Email(message = "Адрес электронной почты должен быть в формате user@gmail.com")
@@ -44,12 +44,12 @@ public class SignUpRequest {
     @Pattern(regexp = "^79[0-9]{9}$")
     private String phone;
 
-    @Schema(description = "Пароль", example = "my_1secret1_password")
+    @Schema(description = "Пароль", example = "user")
     @Size(max = 255, message = "Длина пароля должна быть не более 255 символов")
     @NotBlank(message = "Пароль не может быть пустым")
     private String password;
 
-    @Schema(description = "Подтверждение пароля", example = "my_1secret1_password")
+    @Schema(description = "Подтверждение пароля", example = "user")
     @Size(max = 255, message = "Длина пароля должна быть не более 255 символов")
     @NotBlank(message = "Пароль не может быть пустым")
     private String confirmPassword;

@@ -3,12 +3,16 @@ package org.fomabb.demo.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.fomabb.demo.dto.UserDataDto;
+import org.fomabb.demo.dto.request.UpdateEmailRequest;
+import org.fomabb.demo.dto.request.UpdatePhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.dto.response.PageableResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.entity.EmailData;
 import org.fomabb.demo.entity.PhoneData;
 import org.fomabb.demo.entity.User;
+import org.fomabb.demo.exceptionhandler.exception.BusinessException;
 import org.fomabb.demo.mapper.UserMapper;
 import org.fomabb.demo.repository.UserRepository;
 import org.fomabb.demo.security.enumeration.Role;
@@ -28,6 +32,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static org.fomabb.demo.util.Constant.USER_DOES_NOT_HAVE_PERMISSION;
+import static org.fomabb.demo.util.Constant.USER_WITH_EMAIL_NOT_FOUND;
+import static org.fomabb.demo.util.Constant.USER_WITH_ID_NOT_FOUND;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -45,15 +53,13 @@ public class UserServiceImpl implements UserService {
     public User findUserByEmail(String email) {
         return userRepository.findByPrimaryEmail(email)
                 .orElseGet(() -> userRepository.findByEmailDataEmail(email)
-                        .orElseThrow(() -> new EntityNotFoundException("User with email %s not found"
-                                .formatted(email))));
+                        .orElseThrow(() -> new EntityNotFoundException(String.format(USER_WITH_EMAIL_NOT_FOUND, email))));
     }
 
     @Override
     public User findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User with id %s not found"
-                        .formatted(id)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_WITH_ID_NOT_FOUND, id)));
     }
 
     @Override
@@ -68,7 +74,7 @@ public class UserServiceImpl implements UserService {
                     .build());
             log.info("Email адрес {} добавлен пользователю {}", email, existingUser.getName());
         } else {
-            throw new AccessDeniedException("User does not have permission to update this task");
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }
     }
 
@@ -84,7 +90,7 @@ public class UserServiceImpl implements UserService {
                     .build());
             log.info("Телефон {} добавлен пользователю {}", phone, existingUser.getName());
         } else {
-            throw new AccessDeniedException("User does not have permission to update this task");
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }
     }
 
@@ -96,7 +102,7 @@ public class UserServiceImpl implements UserService {
         if (Objects.equals(existingUser.getId(), userValid) || isAdmin) {
             return emailDataService.getEmailsByUserId(existingUser.getId());
         } else {
-            throw new AccessDeniedException("User does not have permission to update this task");
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }
     }
 
@@ -119,5 +125,95 @@ public class UserServiceImpl implements UserService {
         List<UserdataDtoResponse> dtoList = userMapper.listEntityUserToListUserDto(userPage.getContent());
 
         return pageableResponseUtil.buildPageableResponse(dtoList, userPage, new PageableResponse<>());
+    }
+
+    @Override
+    public PageableResponse<UserDataDto> getAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        List<UserDataDto> userDataDtos = userMapper.listEntityToAllUserDto(userPage.getContent());
+        return pageableResponseUtil.buildPageableResponse(userDataDtos, userPage, new PageableResponse<>());
+    }
+
+    @Override
+    public UserDataDto getUserById(Long id) {
+        return userMapper.entityToUserDataDto(userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format(USER_WITH_ID_NOT_FOUND, id))
+        ));
+    }
+
+    @Override
+    @Transactional
+    public void updateEmail(UpdateEmailRequest dto) {
+        User existingUser = findUserById(dto.getUserId());
+        EmailData emailData = emailDataService.getEmailDataById(dto.getEmailId());
+
+        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
+
+        if (Objects.equals(existingUser.getId(), validateUserId)
+                && Objects.equals(existingUser.getId(), emailData.getId())
+        ) {
+            emailData.setEmail(dto.getEmail());
+            emailDataService.emailDataSave(emailData);
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updatePhone(UpdatePhoneRequest dto) {
+        User existingUser = findUserById(dto.getUserId());
+        PhoneData phoneData = phoneDataService.getPhoneDataById(dto.getPhoneId());
+
+        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
+
+        if (Objects.equals(existingUser.getId(), validateUserId)
+                && Objects.equals(existingUser.getId(), phoneData.getUser().getId())
+        ) {
+            phoneData.setPhone(dto.getPhone());
+            phoneDataService.phoneDataSave(phoneData);
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removePhoneByUserIdPhoneId(Long userId, Long phoneId) {
+        User existingUser = findUserById(userId);
+        PhoneData phoneData = phoneDataService.getPhoneDataById(phoneId);
+        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
+
+        if (Objects.equals(existingUser.getId(), validateUserId)
+                && Objects.equals(existingUser.getId(), phoneData.getUser().getId())) {
+            List<PhoneData> userPhones = phoneDataService.getPhonesByUserId(existingUser.getId());
+            if (userPhones.size() > 1) {
+                phoneDataService.deletePhoneById(phoneData.getId());
+            } else {
+                throw new BusinessException("The user must have at least one phone");
+            }
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removePhoneByUserIdEmailId(Long userId, Long emailId) {
+        User existingUser = findUserById(userId);
+        EmailData emailData = emailDataService.getEmailDataById(emailId);
+        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
+
+        if (Objects.equals(existingUser.getId(), validateUserId)
+                && Objects.equals(existingUser.getId(), emailData.getUser().getId())) {
+            List<EmailData> userEmail = emailDataService.getListEmailsByUserId(existingUser.getId());
+            if (userEmail.size() > 1) {
+                emailDataService.deleteEmailById(emailData.getId());
+            } else {
+                throw new BusinessException("The user must have at least one email");
+            }
+        } else {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
     }
 }

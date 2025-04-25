@@ -1,5 +1,8 @@
 package org.fomabb.demo.service;
 
+import org.fomabb.demo.dto.UserDataDto;
+import org.fomabb.demo.dto.request.UpdateEmailRequest;
+import org.fomabb.demo.dto.request.UpdatePhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.dto.response.PageableResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
@@ -21,4 +24,16 @@ public interface UserService {
     EmailDataDtoResponse getAllEmailsByUserId(Long id);
 
     PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable, Date dateOfBirth);
+
+    PageableResponse<UserDataDto> getAllUsers(Pageable pageable);
+
+    UserDataDto getUserById(Long id);
+
+    void updateEmail(UpdateEmailRequest dto);
+
+    void updatePhone(UpdatePhoneRequest dto);
+
+    void removePhoneByUserIdPhoneId(Long userId, Long phoneId);
+
+    void removePhoneByUserIdEmailId(Long userId, Long emailId);
 }
