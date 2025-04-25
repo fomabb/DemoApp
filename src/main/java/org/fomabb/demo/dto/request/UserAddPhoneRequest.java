@@ -9,6 +9,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
+@Schema(description = "Запрос на добавление дополнительного номера телефона пользователю")
 public class UserAddPhoneRequest {
 
     private Long userId;
