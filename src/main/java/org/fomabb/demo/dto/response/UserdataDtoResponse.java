@@ -23,4 +23,6 @@ public class UserdataDtoResponse {
     private Date dateOfBirth;
 
     private List<String> emails;
+
+    private List<String> phones;
 }

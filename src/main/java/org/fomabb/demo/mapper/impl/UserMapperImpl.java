@@ -2,13 +2,13 @@ package org.fomabb.demo.mapper.impl;
 
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
 import org.fomabb.demo.entity.EmailData;
+import org.fomabb.demo.entity.PhoneData;
 import org.fomabb.demo.entity.User;
 import org.fomabb.demo.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class UserMapperImpl implements UserMapper {
@@ -25,7 +25,10 @@ public class UserMapperImpl implements UserMapper {
                 .dateOfBirth(user.getDateOfBirth())
                 .emails(user.getEmailData().stream()
                         .map(EmailData::getEmail)
-                        .collect(Collectors.toList()))
+                        .toList())
+                .phones(user.getPhoneData().stream()
+                        .map(PhoneData::getPhone)
+                        .toList())
                 .build()).toList();
     }
 }
