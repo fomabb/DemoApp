@@ -1,5 +1,5 @@
-INSERT INTO phone_data (USER_ID, PHONE)
-VALUES (1, '79001234567'),
+insert into phone_data (user_id, phone)
+values (1, '79001234567'),
        (2, '79007654321'),
        (3, '79009876543'),
        (4, '79005432178'),

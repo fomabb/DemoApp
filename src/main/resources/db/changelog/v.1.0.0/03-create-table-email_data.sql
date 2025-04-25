@@ -1,7 +1,7 @@
-CREATE TABLE email_data
+create table email_data
 (
-    ID      BIGSERIAL PRIMARY KEY,
-    USER_ID BIGINT       NOT NULL,
-    EMAIL   VARCHAR(200) NOT NULL UNIQUE,
-    FOREIGN KEY (USER_ID) REFERENCES users (ID) ON DELETE CASCADE
+    id      BIGSERIAL primary key,
+    user_id BIGINT       not null,
+    email   VARCHAR(200) not null unique,
+    foreign key (user_id) references users (id) on delete cascade
 );

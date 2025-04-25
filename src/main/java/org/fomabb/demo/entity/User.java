@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
@@ -25,7 +24,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -72,15 +70,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
-
-    @PostPersist
-    public void onCreateAccount() {
-        if (account == null) {
-            account = new Account();
-            account.setBalance(BigDecimal.ZERO);
-            account.setUser(this);
-        }
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

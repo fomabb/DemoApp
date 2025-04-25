@@ -6,6 +6,7 @@ import org.fomabb.demo.entity.Account;
 import org.fomabb.demo.repository.AccountRepository;
 import org.fomabb.demo.service.AccountService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,5 +19,11 @@ public class AccountServiceImpl implements AccountService {
         return accountRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Account with id: %s not found"
                         .formatted(id)));
+    }
+
+    @Override
+    @Transactional
+    public void createAccountWithBalance(Account account) {
+        accountRepository.save(account);
     }
 }

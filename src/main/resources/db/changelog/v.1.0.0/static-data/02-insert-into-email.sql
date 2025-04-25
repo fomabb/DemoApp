@@ -1,5 +1,5 @@
-INSERT INTO email_data (USER_ID, EMAIL)
-VALUES (1, 'alice.smith@example.com'),
+insert into email_data (user_id, email)
+values (1, 'alice.smith@example.com'),
        (1, 'alice.smith@gmail.com'),
        (2, 'bob.johnson@example.com'),
        (3, 'charlie.brown@example.com'),
