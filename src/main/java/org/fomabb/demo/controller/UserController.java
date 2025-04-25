@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.fomabb.demo.dto.UserDataDto;
 import org.fomabb.demo.dto.request.UserAddEmailRequest;
 import org.fomabb.demo.dto.request.UserAddPhoneRequest;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
@@ -56,8 +57,6 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllEmailsByUserId(id));
     }
 
-
-
     @GetMapping("/search")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
     public ResponseEntity<PageableResponse<UserdataDtoResponse>> search(
@@ -67,5 +66,18 @@ public class UserController {
             @RequestParam(name = "dateOfBirth", required = false) @DateTimeFormat(pattern = "dd.MM.yyyy") Date dateOfBirth
     ) {
         return ResponseEntity.ok(userService.search(query, PageRequest.of(page - 1, size), dateOfBirth));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserDataDto> getUserById(@PathVariable("userId") Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @GetMapping("/show-all")
+    public ResponseEntity<PageableResponse<UserDataDto>> getAllUsers(
+            @RequestParam(value = "page", defaultValue = "1") int page,
+            @RequestParam(value = "size", defaultValue = "5") int size
+    ) {
+        return ResponseEntity.ok(userService.getAllUsers(PageRequest.of(page - 1, size)));
     }
 }

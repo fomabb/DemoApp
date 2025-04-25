@@ -3,6 +3,7 @@ package org.fomabb.demo.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.fomabb.demo.dto.UserDataDto;
 import org.fomabb.demo.dto.response.EmailDataDtoResponse;
 import org.fomabb.demo.dto.response.PageableResponse;
 import org.fomabb.demo.dto.response.UserdataDtoResponse;
@@ -119,5 +120,19 @@ public class UserServiceImpl implements UserService {
         List<UserdataDtoResponse> dtoList = userMapper.listEntityUserToListUserDto(userPage.getContent());
 
         return pageableResponseUtil.buildPageableResponse(dtoList, userPage, new PageableResponse<>());
+    }
+
+    @Override
+    public PageableResponse<UserDataDto> getAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        List<UserDataDto> userDataDtos = userMapper.listEntityToAllUserDto(userPage.getContent());
+        return pageableResponseUtil.buildPageableResponse(userDataDtos, userPage, new PageableResponse<>());
+    }
+
+    @Override
+    public UserDataDto getUserById(Long id) {
+        return userMapper.entityToUserDataDto(userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("User with id %s not found".formatted(id))
+        ));
     }
 }
