@@ -15,7 +15,7 @@ public class DepositAccountScheduler {
 
     private final AccountRepository accountRepository;
 
-    @Scheduled(cron = "${recalculate.all.deposit.account.balance}")
+    @Scheduled(fixedRate = 30000)
     public void recalculateAllDepositAccountsBalance() {
         List<Account> allAccounts = accountRepository.findAll();
 

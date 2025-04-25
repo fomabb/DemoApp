@@ -33,6 +33,41 @@ public class AccountController {
 
     private final AccountService accountService;
 
+    @Operation(
+            summary = "Перевод между счетами пользователей",
+            description = """
+                    `
+                    Необходимо указать в теле запроса IDs отправителя и получателя, при этом сумма не должна быть
+                    отрицательной. Производится проверка принадлежности счёта отправителя через Security.
+                    `
+                    """,
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(required = true,
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TransferDtoRequest.class))
+            ),
+            responses = {
+                    @ApiResponse(responseCode = "202", description = "`Перевод успешно выполнен`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema())
+                    ),
+                    @ApiResponse(responseCode = "400", description = "`Некорректный запрос`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "404", description = "`Пользователь не найден`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "403", description = "`Нет доступа к этому ресурсу`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class))
+                    ),
+                    @ApiResponse(responseCode = "500", description = "`Ошибка сервера`",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class))
+                    )
+            }
+    )
     @PostMapping("/transfer")
     public ResponseEntity<Void> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
         accountService.performTransfer(request);
