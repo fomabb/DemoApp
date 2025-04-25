@@ -2,13 +2,19 @@ package org.fomabb.demo.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
 @Getter
 @Builder
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 @Schema(description = "Перевод денежных средств между счетами пользователей")
 public class TransferDtoRequest {
 

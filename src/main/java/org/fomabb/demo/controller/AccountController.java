@@ -12,7 +12,6 @@ import org.fomabb.demo.dto.exception.CommonExceptionResponse;
 import org.fomabb.demo.dto.request.TransferDtoRequest;
 import org.fomabb.demo.entity.Account;
 import org.fomabb.demo.service.AccountService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
@@ -69,9 +68,9 @@ public class AccountController {
             }
     )
     @PostMapping("/transfer")
-    public ResponseEntity<Void> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
+    public ResponseEntity<String> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
         accountService.performTransfer(request);
-        return ResponseEntity.status(HttpStatus.ACCEPTED).build();
+        return ResponseEntity.accepted().build();
     }
 
     @Operation(
