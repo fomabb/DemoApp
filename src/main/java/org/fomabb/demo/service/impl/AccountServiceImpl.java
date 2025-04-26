@@ -64,12 +64,6 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account getAccountByUserId(Long id) {
-        return accountRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ACCOUNT_WITH_ID_NOT_FOUND.formatted(id)));
-    }
-
-    @Override
     @Transactional
     public void createAccountWithBalance(Account account) {
         accountRepository.save(account);
