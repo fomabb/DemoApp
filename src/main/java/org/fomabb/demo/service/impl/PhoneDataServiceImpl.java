@@ -48,6 +48,6 @@ public class PhoneDataServiceImpl implements PhoneDataService {
 
     @Override
     public PhoneDataDtoResponse getResponsePhonesByUserId(Long userId) {
-        return phoneMapper.phonesEntityToPhoneResponse(phoneDataRepository.findByUserId(userId));
+        return phoneMapper.phonesEntityToPhoneResponse(userId, phoneDataRepository.findByUserId(userId));
     }
 }

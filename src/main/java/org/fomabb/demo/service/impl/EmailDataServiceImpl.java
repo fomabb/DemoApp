@@ -30,7 +30,7 @@ public class EmailDataServiceImpl implements EmailDataService {
 
     @Override
     public EmailDataDtoResponse getEmailsByUserId(Long userId) {
-        return emailMapper.emailEntityToEmailResponse(emailDataRepository.findEmailDataByUserId(userId));
+        return emailMapper.emailEntityToEmailResponse(userId, emailDataRepository.findEmailDataByUserId(userId));
     }
 
     @Override

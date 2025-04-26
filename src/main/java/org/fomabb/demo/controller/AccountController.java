@@ -68,7 +68,7 @@ public class AccountController {
             }
     )
     @PostMapping("/transfer")
-    public ResponseEntity<String> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
+    public ResponseEntity<Void> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
         accountService.performTransfer(request);
         return ResponseEntity.accepted().build();
     }
@@ -100,4 +100,10 @@ public class AccountController {
     public ResponseEntity<Account> getAccountByUserId(@PathVariable("userId") @Valid Long id) {
         return ResponseEntity.ok(accountService.getAccountByUserId(id));
     }
+
+//    @GetMapping("/balance/users/{userId}")
+//    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
+//    public ResponseEntity<AccountBalanceDataDtoResponse> getBalanceByUserId(@PathVariable("userId") Long id) {
+//        ResponseEntity.ok();
+//    }
 }
