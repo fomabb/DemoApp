@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface EmailMapper {
 
-    EmailDataDtoResponse emailEntityToEmailResponse(List<EmailData> emailData);
+    EmailDataDtoResponse emailEntityToEmailResponse(Long userId, List<EmailData> emailData);
 }

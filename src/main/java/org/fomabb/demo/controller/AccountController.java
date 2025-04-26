@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.fomabb.demo.dto.exception.CommonExceptionResponse;
 import org.fomabb.demo.dto.request.TransferDtoRequest;
+import org.fomabb.demo.dto.response.AccountBalanceDataDtoResponse;
 import org.fomabb.demo.entity.Account;
 import org.fomabb.demo.service.AccountService;
 import org.springframework.http.ResponseEntity;
@@ -68,7 +69,8 @@ public class AccountController {
             }
     )
     @PostMapping("/transfer")
-    public ResponseEntity<String> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Void> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
         accountService.performTransfer(request);
         return ResponseEntity.accepted().build();
     }
@@ -99,5 +101,34 @@ public class AccountController {
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
     public ResponseEntity<Account> getAccountByUserId(@PathVariable("userId") @Valid Long id) {
         return ResponseEntity.ok(accountService.getAccountByUserId(id));
+    }
+
+    @Operation(
+            summary = "Получить баланс аккаунта по ID пользователя.",
+            description = """
+                    Возвращает информацию о балансе аккаунта, связанном с указанным пользователем по его идентификатору.
+                    """,
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "Аккаунт успешно найден",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = AccountBalanceDataDtoResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "404", description = "Аккаунт не найден",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class)
+                            )
+                    ),
+                    @ApiResponse(responseCode = "500", description = "Ошибка сервера",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = CommonExceptionResponse.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/balance/users/{userId}")
+    @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
+    public ResponseEntity<AccountBalanceDataDtoResponse> getBalanceByUserId(@PathVariable("userId") Long id) {
+        return ResponseEntity.ok(accountService.getBalanceByUserId(id));
     }
 }

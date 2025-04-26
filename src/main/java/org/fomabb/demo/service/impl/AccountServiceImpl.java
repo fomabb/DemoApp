@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.fomabb.demo.dto.request.TransferDtoRequest;
+import org.fomabb.demo.dto.response.AccountBalanceDataDtoResponse;
 import org.fomabb.demo.entity.Account;
 import org.fomabb.demo.entity.User;
 import org.fomabb.demo.exceptionhandler.exception.BusinessException;
@@ -13,10 +14,9 @@ import org.fomabb.demo.service.AccountService;
 import org.fomabb.demo.service.UserService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
+import java.math.BigDecimal;
 
 import static org.fomabb.demo.util.Constant.ACCOUNT_WITH_ID_NOT_FOUND;
 import static org.fomabb.demo.util.Constant.THERE_ARE_INSUFFICIENT_FUNDS_IN_THE_ACCOUNT;
@@ -29,28 +29,38 @@ import static org.fomabb.demo.util.Constant.USER_DOES_NOT_HAVE_PERMISSION;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final UserService userService;
     private final UserServiceSecurity userServiceSecurity;
+    private final UserService userService;
 
     @Override
-    @Transactional(propagation = Propagation.SUPPORTS)
+    @Transactional
     public void performTransfer(TransferDtoRequest dto) {
-        User userSender = userService.findUserById(dto.getTransferFrom());
-        User userRecipient = userService.findUserById(dto.getTransferTo());
+        Long currentUserId = userServiceSecurity.getCurrentUser().getId();
 
-        Long userIdValidate = userServiceSecurity.getCurrentUser().getId();
-
-        if (Objects.equals(userSender.getId(), userIdValidate)) {
-            if (userSender.getAccount().getActualBalance().compareTo(dto.getTransferAmount()) > 0) {
-                userSender.getAccount().setActualBalance(userSender.getAccount().getActualBalance().subtract(dto.getTransferAmount()));
-                userRecipient.getAccount().setActualBalance(userRecipient.getAccount().getActualBalance().add(dto.getTransferAmount()));
-            } else {
-                log.warn("На аккаунте с id: {} недостаточно средств для перевода.", userSender.getAccount().getId());
-                throw new BusinessException(THERE_ARE_INSUFFICIENT_FUNDS_IN_THE_ACCOUNT);
-            }
-        } else {
+        // Проверяются права доступа из Claim(id) отправителя - @author Nikolay Kirilyuk
+        if (!dto.getTransferFrom().equals(currentUserId)) {
             throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }
+
+        // Блокируем обе записи аккаунтов - @author Nikolay Kirilyuk
+        Account senderAccount = accountRepository.findByUserIdForUpdate(dto.getTransferFrom())
+                .orElseThrow(() -> new EntityNotFoundException("Sender's account was not found"));
+
+        Account recipientAccount = accountRepository.findByUserIdForUpdate(dto.getTransferTo())
+                .orElseThrow(() -> new EntityNotFoundException("Recipient's account was not found"));
+
+        BigDecimal amount = dto.getTransferAmount();
+
+        if (senderAccount.getActualBalance().compareTo(amount) < 0) {
+            log.warn("Недостаточно средств на счете отправителя ID: {}", senderAccount.getId());
+            throw new BusinessException(THERE_ARE_INSUFFICIENT_FUNDS_IN_THE_ACCOUNT);
+        }
+
+        senderAccount.setActualBalance(senderAccount.getActualBalance().subtract(amount));
+        recipientAccount.setActualBalance(recipientAccount.getActualBalance().add(amount));
+
+        log.info("Перевод {}₽ от пользователя {} пользователю {} успешно выполнен.",
+                amount, dto.getTransferFrom(), dto.getTransferTo());
     }
 
     @Override
@@ -64,4 +74,22 @@ public class AccountServiceImpl implements AccountService {
     public void createAccountWithBalance(Account account) {
         accountRepository.save(account);
     }
+
+    @Override
+    public AccountBalanceDataDtoResponse getBalanceByUserId(Long id) {
+        Long currentUserId = userServiceSecurity.getCurrentUser().getId();
+        User userExist = userService.findUserById(id);
+        if (!userExist.getId().equals(currentUserId)) {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+        return accountRepository.findAccountByUserId(id).map(account -> AccountBalanceDataDtoResponse.builder()
+                .userId(account.getUser().getId())
+                .accountId(account.getId())
+                .deposit(account.getBalance())
+                .actualBalance(account.getActualBalance())
+                .build()).orElseThrow(() -> new EntityNotFoundException(
+                ACCOUNT_WITH_ID_NOT_FOUND.formatted(id)
+        ));
+    }
+
 }

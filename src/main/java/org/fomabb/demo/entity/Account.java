@@ -8,6 +8,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +41,7 @@ public class Account {
 
     @Column(name = "actual_balance", nullable = false)
     private BigDecimal actualBalance;
+
+    @Version
+    private Integer version;
 }

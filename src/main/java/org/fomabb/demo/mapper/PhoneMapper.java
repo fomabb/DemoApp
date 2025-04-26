@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface PhoneMapper {
 
-    PhoneDataDtoResponse phonesEntityToPhoneResponse(List<PhoneData> phoneData);
+    PhoneDataDtoResponse phonesEntityToPhoneResponse(Long userId, List<PhoneData> phoneData);
 }

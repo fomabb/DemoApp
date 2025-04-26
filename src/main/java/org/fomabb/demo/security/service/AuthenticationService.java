@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
-import java.util.Set;
 
 @Service
 @Slf4j
@@ -56,7 +55,7 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
                 .emailData(new HashSet<>())
-                .phoneData(Set.of(PhoneData.builder().phone(request.getPhone()).build()))
+                .phoneData(new HashSet<>())
                 .build();
         userServiceSecurity.create(user);
         log.info("Пользователь сохранен в базу данных");
