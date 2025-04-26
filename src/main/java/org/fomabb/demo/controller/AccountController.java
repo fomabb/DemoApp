@@ -68,6 +68,7 @@ public class AccountController {
             }
     )
     @PostMapping("/transfer")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> performTransfer(@RequestBody @Valid TransferDtoRequest request) {
         accountService.performTransfer(request);
         return ResponseEntity.accepted().build();
