@@ -1,6 +1,7 @@
 package org.fomabb.demo.service;
 
 import org.fomabb.demo.dto.request.TransferDtoRequest;
+import org.fomabb.demo.dto.response.AccountBalanceDataDtoResponse;
 import org.fomabb.demo.entity.Account;
 
 public interface AccountService {
@@ -11,4 +12,5 @@ public interface AccountService {
 
     void createAccountWithBalance(Account account);
 
+    AccountBalanceDataDtoResponse getBalanceByUserId(Long id);
 }

@@ -4,7 +4,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.fomabb.demo.dto.request.TransferDtoRequest;
+import org.fomabb.demo.dto.response.AccountBalanceDataDtoResponse;
 import org.fomabb.demo.entity.Account;
+import org.fomabb.demo.entity.User;
 import org.fomabb.demo.exceptionhandler.exception.BusinessException;
 import org.fomabb.demo.repository.AccountRepository;
 import org.fomabb.demo.security.service.UserServiceSecurity;
@@ -27,8 +29,8 @@ import static org.fomabb.demo.util.Constant.USER_DOES_NOT_HAVE_PERMISSION;
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final UserService userService;
     private final UserServiceSecurity userServiceSecurity;
+    private final UserService userService;
 
     @Override
     @Transactional
@@ -72,4 +74,22 @@ public class AccountServiceImpl implements AccountService {
     public void createAccountWithBalance(Account account) {
         accountRepository.save(account);
     }
+
+    @Override
+    public AccountBalanceDataDtoResponse getBalanceByUserId(Long id) {
+        Long currentUserId = userServiceSecurity.getCurrentUser().getId();
+        User userExist = userService.findUserById(id);
+        if (!userExist.getId().equals(currentUserId)) {
+            throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
+        }
+        return accountRepository.findAccountByUserId(id).map(account -> AccountBalanceDataDtoResponse.builder()
+                .userId(account.getUser().getId())
+                .accountId(account.getId())
+                .deposit(account.getBalance())
+                .actualBalance(account.getActualBalance())
+                .build()).orElseThrow(() -> new EntityNotFoundException(
+                ACCOUNT_WITH_ID_NOT_FOUND.formatted(id)
+        ));
+    }
+
 }
