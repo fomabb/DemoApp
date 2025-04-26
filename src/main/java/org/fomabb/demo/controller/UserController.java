@@ -282,7 +282,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).build();
     }
 
-
     @Operation(
             summary = "Удалить номер телефона пользователя.",
             description = """
