@@ -8,8 +8,6 @@ public interface AccountService {
 
     void performTransfer(TransferDtoRequest dto);
 
-    Account getAccountByUserId(Long id);
-
     void createAccountWithBalance(Account account);
 
     AccountBalanceDataDtoResponse getBalanceByUserId(Long id);

@@ -25,13 +25,17 @@ public class DepositAccountScheduler {
 
             BigDecimal maxAllowedBalance = initialDeposit.multiply(BigDecimal.valueOf(2.07));
 
-            BigDecimal newBalance = currentBalance.multiply(BigDecimal.valueOf(1.10));
+            if (currentBalance.compareTo(maxAllowedBalance) < 0) {
+                BigDecimal increaseAmount = initialDeposit.multiply(BigDecimal.valueOf(0.10));
+                BigDecimal newBalance = currentBalance.add(increaseAmount);
 
-            if (newBalance.compareTo(maxAllowedBalance) > 0) {
-                newBalance = maxAllowedBalance;
+                if (newBalance.compareTo(maxAllowedBalance) > 0) {
+                    newBalance = maxAllowedBalance;
+                }
+
+                account.setActualBalance(newBalance);
             }
 
-            account.setActualBalance(newBalance);
             accountRepository.save(account);
         });
     }
