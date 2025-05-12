@@ -43,13 +43,17 @@ class AccountServiceImplTest {
         User currentUser = User.builder().id(senderId).build();
         when(userServiceSecurity.getCurrentUser()).thenReturn(currentUser);
 
+        User senderUser = User.builder().id(senderId).build();
         Account senderAccount = Account.builder()
                 .id(1L)
+                .user(senderUser)
                 .actualBalance(new BigDecimal("500"))
                 .build();
 
+        User recipientUser = User.builder().id(recipientId).build();
         Account recipientAccount = Account.builder()
                 .id(2L)
+                .user(recipientUser)
                 .actualBalance(new BigDecimal("200"))
                 .build();
 
@@ -77,8 +81,10 @@ class AccountServiceImplTest {
         User currentUser = User.builder().id(senderId).build();
         when(userServiceSecurity.getCurrentUser()).thenReturn(currentUser);
 
+        User senderUser = User.builder().id(senderId).build();
         Account senderAccount = Account.builder()
                 .id(1L)
+                .user(senderUser)
                 .actualBalance(new BigDecimal("500"))
                 .build();
 
