@@ -7,7 +7,7 @@ package org.fomabb.demo.exceptionhandler.exception;
  * или логикой приложения. Упаковка сообщений об ошибках в это исключение позволяет централизованно
  * обрабатывать бизнес-ошибки в приложении.
  *
- * @author Ваше Имя
+ * @author Nikolay Kirilyuk
  */
 public class BusinessException extends RuntimeException {
     public BusinessException(String message) {

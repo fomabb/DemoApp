@@ -37,19 +37,26 @@ public class AccountServiceImpl implements AccountService {
     public void performTransfer(TransferDtoRequest dto) {
         Long currentUserId = userServiceSecurity.getCurrentUser().getId();
 
-        // Проверяются права доступа из Claim(id) отправителя - @author Nikolay Kirilyuk
         if (!dto.getTransferFrom().equals(currentUserId)) {
             throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }
 
-        // Блокируем обе записи аккаунтов - @author Nikolay Kirilyuk
-        Account senderAccount = accountRepository.findByUserIdForUpdate(dto.getTransferFrom())
-                .orElseThrow(() -> new EntityNotFoundException("Sender's account was not found"));
-
-        Account recipientAccount = accountRepository.findByUserIdForUpdate(dto.getTransferTo())
-                .orElseThrow(() -> new EntityNotFoundException("Recipient's account was not found"));
-
+        Long fromUserId = dto.getTransferFrom();
+        Long toUserId = dto.getTransferTo();
         BigDecimal amount = dto.getTransferAmount();
+
+        Long firstUserId = fromUserId.compareTo(toUserId) < 0 ? fromUserId : toUserId;
+        Long secondUserId = fromUserId.compareTo(toUserId) < 0 ? toUserId : fromUserId;
+
+        Account firstAccount = accountRepository.findByUserIdForUpdate(firstUserId)
+                .orElseThrow(() -> new EntityNotFoundException(ACCOUNT_WITH_ID_NOT_FOUND.formatted(firstUserId)));
+
+        Account secondAccount = accountRepository.findByUserIdForUpdate(secondUserId)
+                .orElseThrow(() -> new EntityNotFoundException(ACCOUNT_WITH_ID_NOT_FOUND.formatted(secondUserId)));
+
+        Account senderAccount = fromUserId.equals(firstAccount.getUser().getId()) ? firstAccount : secondAccount;
+        Account recipientAccount = fromUserId.equals(firstAccount.getUser().getId()) ? secondAccount : firstAccount;
+
 
         if (senderAccount.getActualBalance().compareTo(amount) < 0) {
             log.warn("Недостаточно средств на счете отправителя ID: {}", senderAccount.getId());
@@ -60,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
         recipientAccount.setActualBalance(recipientAccount.getActualBalance().add(amount));
 
         log.info("Перевод {}₽ от пользователя {} пользователю {} успешно выполнен.",
-                amount, dto.getTransferFrom(), dto.getTransferTo());
+                amount, fromUserId, toUserId);
     }
 
     @Override
