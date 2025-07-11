@@ -120,6 +120,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDataDto test() {
+        Long validUser = userServiceSecurity.getCurrentUser().getId();
+        return userMapper.entityToUserDataDto(userRepository.findById(validUser).orElseThrow(
+                ()-> new EntityNotFoundException(USER_WITH_ID_NOT_FOUND.formatted(validUser)))
+        );
+    }
+
+    @Override
     public PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable, Date dateOfBirth) {
         if (query == null || query.trim().isEmpty()) {
             return pageableResponseUtil.buildPageableResponse(

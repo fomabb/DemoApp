@@ -452,4 +452,9 @@ public class UserController {
     ) {
         return ResponseEntity.ok(userService.getAllUsers(PageRequest.of(page - 1, size)));
     }
+
+    @GetMapping("/test")
+    public UserDataDto test() {
+        return userService.test();
+    }
 }

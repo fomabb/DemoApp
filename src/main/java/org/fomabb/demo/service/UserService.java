@@ -39,4 +39,6 @@ public interface UserService {
     void removePhoneByUserIdEmailId(Long userId, Long emailId);
 
     PhoneDataDtoResponse getAllPhonesByUserId(Long id);
+
+    UserDataDto test();
 }
