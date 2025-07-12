@@ -18,11 +18,11 @@ public interface UserService {
 
     User findUserById(Long id);
 
-    void addEmailToUser(Long userId, String email);
+    void addEmailToUser(String email);
 
-    void addPhoneToUser(Long userId, String phone);
+    void addPhoneToUser(String phone);
 
-    EmailDataDtoResponse getAllEmailsByUserId(Long id);
+    EmailDataDtoResponse getAllEmailsByUserId();
 
     PageableResponse<UserdataDtoResponse> search(String query, Pageable pageable, Date dateOfBirth);
 
@@ -34,11 +34,9 @@ public interface UserService {
 
     void updatePhone(UpdatePhoneRequest dto);
 
-    void removePhoneByUserIdPhoneId(Long userId, Long phoneId);
+    void removePhoneByUserIdPhoneId(Long phoneId);
 
-    void removePhoneByUserIdEmailId(Long userId, Long emailId);
+    void removePhoneByUserIdEmailId(Long emailId);
 
-    PhoneDataDtoResponse getAllPhonesByUserId(Long id);
-
-    UserDataDto test();
+    PhoneDataDtoResponse getAllPhonesByUserId();
 }

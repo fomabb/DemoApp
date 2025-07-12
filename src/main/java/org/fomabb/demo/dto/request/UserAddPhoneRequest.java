@@ -12,8 +12,6 @@ import lombok.Getter;
 @Schema(description = "Запрос на добавление дополнительного номера телефона пользователю")
 public class UserAddPhoneRequest {
 
-    private Long userId;
-
     @Schema(description = "Номер телефона", example = "79207865432")
     @Size(min = 11, message = "Телефон должен содержать должен содержать 13 символов")
     @NotBlank(message = "Адрес электронной почты не может быть пустым")

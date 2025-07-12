@@ -65,9 +65,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void addEmailToUser(Long userId, String email) {
-        User existingUser = findUserById(userId);
+    public void addEmailToUser(String email) {
         Long validUserId = userServiceSecurity.getCurrentUser().getId();
+        User existingUser = findUserById(validUserId);
         if (Objects.equals(existingUser.getId(), validUserId)) {
             emailDataService.emailDataSave(EmailData.builder()
                     .user(existingUser)
@@ -81,9 +81,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void addPhoneToUser(Long userId, String phone) {
-        User existingUser = findUserById(userId);
+    public void addPhoneToUser(String phone) {
         Long validUserId = userServiceSecurity.getCurrentUser().getId();
+        User existingUser = findUserById(validUserId);
         if (Objects.equals(existingUser.getId(), validUserId)) {
             phoneDataService.phoneDataSave(PhoneData.builder()
                     .user(existingUser)
@@ -96,10 +96,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public EmailDataDtoResponse getAllEmailsByUserId(Long id) {
+    public EmailDataDtoResponse getAllEmailsByUserId() {
         Long userValid = userServiceSecurity.getCurrentUser().getId();
         boolean isAdmin = userServiceSecurity.getCurrentUser().getRole().equals(Role.ROLE_ADMIN);
-        User existingUser = findUserById(id);
+        User existingUser = findUserById(userValid);
         if (Objects.equals(existingUser.getId(), userValid) || isAdmin) {
             return emailDataService.getEmailsByUserId(existingUser.getId());
         } else {
@@ -108,23 +108,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PhoneDataDtoResponse getAllPhonesByUserId(Long id) {
+    public PhoneDataDtoResponse getAllPhonesByUserId() {
         Long userValid = userServiceSecurity.getCurrentUser().getId();
         boolean isAdmin = userServiceSecurity.getCurrentUser().getRole().equals(Role.ROLE_ADMIN);
-        User existingUser = findUserById(id);
+        User existingUser = findUserById(userValid);
         if (Objects.equals(existingUser.getId(), userValid) || isAdmin) {
             return phoneDataService.getResponsePhonesByUserId(existingUser.getId());
         } else {
             throw new AccessDeniedException(USER_DOES_NOT_HAVE_PERMISSION);
         }
-    }
-
-    @Override
-    public UserDataDto test() {
-        Long validUser = userServiceSecurity.getCurrentUser().getId();
-        return userMapper.entityToUserDataDto(userRepository.findById(validUser).orElseThrow(
-                ()-> new EntityNotFoundException(USER_WITH_ID_NOT_FOUND.formatted(validUser)))
-        );
     }
 
     @Override
@@ -165,12 +157,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateEmail(UpdateEmailRequest dto) {
-        User existingUser = findUserById(dto.getUserId());
+        Long userValid = userServiceSecurity.getCurrentUser().getId();
+        User existingUser = findUserById(userValid);
         EmailData emailData = emailDataService.getEmailDataById(dto.getEmailId());
 
-        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
-
-        if (Objects.equals(existingUser.getId(), validateUserId)
+        if (Objects.equals(existingUser.getId(), userValid)
                 && Objects.equals(existingUser.getId(), emailData.getId())
         ) {
             emailData.setEmail(dto.getEmail());
@@ -188,12 +179,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updatePhone(UpdatePhoneRequest dto) {
-        User existingUser = findUserById(dto.getUserId());
+        Long userValid = userServiceSecurity.getCurrentUser().getId();
+        User existingUser = findUserById(userValid);
         PhoneData phoneData = phoneDataService.getPhoneDataById(dto.getPhoneId());
 
-        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
-
-        if (Objects.equals(existingUser.getId(), validateUserId)
+        if (Objects.equals(existingUser.getId(), userValid)
                 && Objects.equals(existingUser.getId(), phoneData.getUser().getId())
         ) {
             phoneData.setPhone(dto.getPhone());
@@ -205,12 +195,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void removePhoneByUserIdPhoneId(Long userId, Long phoneId) {
-        User existingUser = findUserById(userId);
+    public void removePhoneByUserIdPhoneId(Long phoneId) {
+        Long userValid = userServiceSecurity.getCurrentUser().getId();
+        User existingUser = findUserById(userValid);
         PhoneData phoneData = phoneDataService.getPhoneDataById(phoneId);
-        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
 
-        if (Objects.equals(existingUser.getId(), validateUserId)
+        if (Objects.equals(existingUser.getId(), userValid)
                 && Objects.equals(existingUser.getId(), phoneData.getUser().getId())) {
             List<PhoneData> userPhones = phoneDataService.getPhonesByUserId(existingUser.getId());
             if (userPhones.size() > 1) {
@@ -225,12 +215,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void removePhoneByUserIdEmailId(Long userId, Long emailId) {
-        User existingUser = findUserById(userId);
+    public void removePhoneByUserIdEmailId(Long emailId) {
+        Long userValid = userServiceSecurity.getCurrentUser().getId();
+        User existingUser = findUserById(userValid);
         EmailData emailData = emailDataService.getEmailDataById(emailId);
-        Long validateUserId = userServiceSecurity.getCurrentUser().getId();
 
-        if (Objects.equals(existingUser.getId(), validateUserId)
+        if (Objects.equals(existingUser.getId(), userValid)
                 && Objects.equals(existingUser.getId(), emailData.getUser().getId())) {
             List<EmailData> userEmail = emailDataService.getListEmailsByUserId(existingUser.getId());
             if (userEmail.size() > 1) {

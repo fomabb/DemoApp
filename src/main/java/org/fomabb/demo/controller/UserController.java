@@ -83,7 +83,7 @@ public class UserController {
     @PostMapping("/add-email")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
     public ResponseEntity<Void> addEmailToUserById(@RequestBody @Valid UserAddEmailRequest request) {
-        userService.addEmailToUser(request.getUserId(), request.getEmail());
+        userService.addEmailToUser(request.getEmail());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -138,7 +138,6 @@ public class UserController {
                     `
                     """,
             parameters = {
-                    @Parameter(name = "userId", required = true, description = "Идентификатор пользователя."),
                     @Parameter(name = "emailId", required = true, description = "Идентификатор электронной почты для удаления.")
             },
             responses = {
@@ -164,12 +163,9 @@ public class UserController {
                     )
             }
     )
-    @DeleteMapping("/{userId}/delete-email/{emailId}")
-    public ResponseEntity<Void> deleteEByIdByUserId(
-            @PathVariable("userId") Long userId,
-            @PathVariable("emailId") Long emailId
-    ) {
-        userService.removePhoneByUserIdEmailId(userId, emailId);
+    @DeleteMapping("/delete-email/{emailId}")
+    public ResponseEntity<Void> deleteEByIdByUserId(@PathVariable("emailId") Long emailId) {
+        userService.removePhoneByUserIdEmailId(emailId);
         return ResponseEntity.noContent().build();
     }
 
@@ -195,10 +191,10 @@ public class UserController {
                     )
             }
     )
-    @GetMapping("/show-phones/{userId}")
+    @GetMapping("/show-phones")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
-    public ResponseEntity<PhoneDataDtoResponse> getAllPhonesByUserId(@PathVariable("userId") Long id) {
-        return ResponseEntity.ok(userService.getAllPhonesByUserId(id));
+    public ResponseEntity<PhoneDataDtoResponse> getAllPhonesByUserId() {
+        return ResponseEntity.ok(userService.getAllPhonesByUserId());
     }
 
     @Operation(
@@ -236,7 +232,7 @@ public class UserController {
     @PostMapping("/add-phone")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
     public ResponseEntity<Void> addPhoneToUserById(@RequestBody @Valid UserAddPhoneRequest request) {
-        userService.addPhoneToUser(request.getUserId(), request.getPhone());
+        userService.addPhoneToUser(request.getPhone());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -291,7 +287,6 @@ public class UserController {
                     `
                     """,
             parameters = {
-                    @Parameter(name = "userId", required = true, description = "Идентификатор пользователя."),
                     @Parameter(name = "phoneId", required = true, description = "Идентификатор номера телефона для удаления.")
             },
             responses = {
@@ -317,12 +312,9 @@ public class UserController {
                     )
             }
     )
-    @DeleteMapping("/{userId}/delete-phone/{phoneId}")
-    public ResponseEntity<Void> deletePhoneByIdByUserId(
-            @PathVariable("userId") Long userId,
-            @PathVariable("phoneId") Long phoneId
-    ) {
-        userService.removePhoneByUserIdPhoneId(userId, phoneId);
+    @DeleteMapping("/delete-phone/{phoneId}")
+    public ResponseEntity<Void> deletePhoneByIdByUserId(@PathVariable("phoneId") Long phoneId) {
+        userService.removePhoneByUserIdPhoneId(phoneId);
         return ResponseEntity.noContent().build();
     }
 
@@ -348,10 +340,10 @@ public class UserController {
                     )
             }
     )
-    @GetMapping("/show-emails/{userId}")
+    @GetMapping("/show-emails")
     @PreAuthorize("hasRole('ADMIN') or (hasRole('USER'))")
-    public ResponseEntity<EmailDataDtoResponse> getAllEmailsByUserId(@PathVariable("userId") Long id) {
-        return ResponseEntity.ok(userService.getAllEmailsByUserId(id));
+    public ResponseEntity<EmailDataDtoResponse> getAllEmailsByUserId() {
+        return ResponseEntity.ok(userService.getAllEmailsByUserId());
     }
 
     @Operation(
@@ -451,10 +443,5 @@ public class UserController {
             @RequestParam(value = "size", defaultValue = "5") int size
     ) {
         return ResponseEntity.ok(userService.getAllUsers(PageRequest.of(page - 1, size)));
-    }
-
-    @GetMapping("/test")
-    public UserDataDto test() {
-        return userService.test();
     }
 }
