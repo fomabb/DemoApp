@@ -12,9 +12,6 @@ import lombok.Setter;
 @Schema(description = "Запрос на обновление номера телефона пользователя")
 public class UpdatePhoneRequest {
 
-    @Schema(description = "Уникальный идентификатор пользователя", example = "1")
-    private Long userId;
-
     @Schema(description = "Уникальный идентификатор номера телефона", example = "100")
     private Long phoneId;
 

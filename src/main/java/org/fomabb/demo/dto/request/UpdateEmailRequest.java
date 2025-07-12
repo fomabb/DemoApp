@@ -12,9 +12,6 @@ import lombok.Setter;
 @Schema(description = "Запрос на обновление адреса электронной почты пользователя")
 public class UpdateEmailRequest {
 
-    @Schema(description = "Уникальный идентификатор пользователя", example = "1")
-    private Long userId;
-
     @Schema(description = "Уникальный идентификатор адреса электронной почты", example = "100")
     private Long emailId;
 
